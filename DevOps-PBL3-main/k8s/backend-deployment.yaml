@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-backend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: student-backend
+
+  template:
+    metadata:
+      labels:
+        app: student-backend
+
+    spec:
+      containers:
+        - name: backend
+          image: agnik007/devops-pbl3-backend:latest
+
+          ports:
+            - containerPort: 5000
+
+          env:
+            - name: PORT
+              value: "5000"
+
+            - name: JWT_SECRET
+              value: "supersecret"
+
+            - name: MONGO_URI
+              value: "mongodb://mongo-service:27017/student_management"
+
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 40
+            periodSeconds: 15
